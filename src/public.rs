@@ -20,6 +20,7 @@ use curve25519_dalek::edwards::EdwardsPoint;
 use curve25519_dalek::scalar::Scalar;
 
 use ed25519::signature::Verifier;
+use blake2::Blake2b;
 
 pub use sha2::Sha512;
 
@@ -54,10 +55,9 @@ impl AsRef<[u8]> for PublicKey {
 impl<'a> From<&'a SecretKey> for PublicKey {
     /// Derive this public key from its corresponding `SecretKey`.
     fn from(secret_key: &SecretKey) -> PublicKey {
-        let mut h: Sha512 = Sha512::new();
+        let mut h = Blake2b::new();
         let mut hash: [u8; 64] = [0u8; 64];
         let mut digest: [u8; 32] = [0u8; 32];
-
         h.update(secret_key.as_bytes());
         hash.copy_from_slice(h.finalize().as_slice());
 
